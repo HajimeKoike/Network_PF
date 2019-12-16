@@ -20,7 +20,7 @@ void Network_Dynamics::step(){
 					double rand=u(mt);
 					if(rand<(this->now).nodes.at(nbd_id).get_transmission_power()){
 						node.get_infected();
-						std::cout<<"infected "<<node.get_id()<<"by "<<nbd_id<<std::endl;
+						std::cout<<"infected "<<node.get_id()<<" by "<<nbd_id<<std::endl;
 					}
 				}
 			}
@@ -40,9 +40,9 @@ void Network_Dynamics::step(){
 	this->now=this->next;
 	this->t=this->t+1;	
 
-	std::cout<<"next clear"<<std::endl;
+//	std::cout<<"next clear"<<std::endl;
 	(this->next).nodes.clear();
-	std::cout<<"done"<<std::endl;
+//	std::cout<<"done"<<std::endl;
 }	
 
 void Network_Dynamics::run(int T){

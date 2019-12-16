@@ -9,7 +9,7 @@ class Network_Dynamics{
 		Network now;
 		Network next;
 		int t;
-		Network_Dynamics(const Network now): now(now), t(0) { std::cout<<"dynamics"<<std::endl;};
+		Network_Dynamics(const Network now): now(now), t(0) { }
 		void step();
 		void run(int T);
 };

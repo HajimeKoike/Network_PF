@@ -33,6 +33,14 @@ void Network::set_adjacent(std::map<node_id,std::vector<node_id> > adjs){
 	}
 }
 
+std::list<node_id> Network::get_id() const {
+	std::list<node_id> id_list;
+	for(const auto& [node_id,node]: this->nodes){
+		id_list.push_back(node_id);
+	}
+	return id_list;
+}
+
 std::map<node_id,int> Network::get_state() const {
 	std::map<node_id,int> state;
 	for(const auto& [node_id,node]: this->nodes){

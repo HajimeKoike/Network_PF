@@ -1,17 +1,13 @@
 #include "Particles.h"
 
-Particles::Particles(int size,Network forecast){
-	this->size=size;
+Particles::Particles(int size,Network forecast): size(size),id_list(forecast.get_id()){
 	for(particle_id id=0;id<this->size;id++){
 		this->forecast[id]=forecast;
 		this->forecast_weight[id]=1.0/this->size;
 	}
 }
 
-Particles::Particles(std::map<int,Network> forecast,std::map<int,double> weight){
-	this->size=weight.size();
-	this->forecast=forecast;
-	this->forecast_weight=weight;
+Particles::Particles(std::map<int,Network> forecast,std::map<int,double> weight): size(weight.size()),forecast(forecast),forecast_weight(weight){
 }
 
 void Particles::cout_likelihood() const {
@@ -51,7 +47,7 @@ void Particles::calc_likelihood(const std::map<node_id,Node> y){
 		std::map<particle_id,double> d;//size=obs_dim
 		for(const auto& [obs_node_id,obs_node]: y){
 			double dtmp=double(obs_node.get_state()-network.nodes.at(obs_node_id).get_state());
-			std::cout<<"dtmp "<<dtmp<<std::endl;
+//			std::cout<<"dtmp "<<dtmp<<std::endl;
 			d[obs_node_id]=-0.5*dtmp*dtmp;
 		}
 		d_net[id]=std::accumulate(d.begin(),d.end(),0.0,[](double acc, std::pair<particle_id,double> p){ return (acc+p.second); });	
@@ -79,12 +75,18 @@ void Particles::update(const std::map<node_id,Node> y){
 	calc_likelihood(y);
 	cout_likelihood();
 	calc_analysis_weight();
-//	resample(true);
-//	this->forecast=this->anaysis;
-	this->forecast_weight=this->analysis_weight;
+/*	bool condition=true;
+	if(condition){
+		resample();
+	}else{
+		this->analysis=this->forecast;
+	}
+	this->forecast=this->anaysis;
+*/	this->forecast_weight=this->analysis_weight;
 	cout_weight();
 	this->t=this->t+1;
 	this->likelihood.clear();
+//	this->analysis.clear();
 	this->analysis_weight.clear();
 }
 
@@ -95,31 +97,36 @@ double Particles::Neff(){
 }
 
 /*
-void Particles::resample(bool condition){
+void Particles::resample(){
 	//based on my previous code. EDITED BY HAJIME KOIKE on 1st Dec.2019
-	if(condition==true){
-		std::partial_sum(this->analysis_weight.begin(),this->analysis_weight.end(),std::map<int,double> cumulative_w.begin(),[](std::pair<int,double> p1,std::pair<int,double> p2){ return std::make_pair(p2.first,p1.second+p2.second); });
-		double ind=0.0;
-		for(auto network: this->forecast){
-			ind+=1.0/this->size;
-			
-			this->analysis[i]=this->forecast[];
-			this->analysis_weight[i]=1.0/this->size;
-		}
-	}else{
-		this->analysis=this->forecast;
+	std::partial_sum(this->analysis_weight.begin(),this->analysis_weight.end(),std::map<int,double> cumulative_w.begin(),[](std::pair<int,double> p1,std::pair<int,double> p2){ return std::make_pair(p2.first,p1.second+p2.second); });
+	double ind=0.0;
+	for(particle_id id=0;id<this->size;id++){
+		ind+=1.0/this->size;
+		
+		this->analysis[id]=this->forecast[];
+		this->analysis_weight[id]=1.0/this->size;
 	}
 }
 */
 
-Network Particles::get_analysis(){
+Network Particles::get_analysis() const{
 	std::map<node_id,Node> nodes;
-	for(auto node_id: node_list){
+	for(auto node_id: this->id_list){
 		Node node(node_id);
-		node.set_state();
-		node.set_transmission_power();
-		node.set_infectious_period();//adopt majority
+		double state=0.0;
+		double transmission_power=0.0;
+		int infectious_period;
+		for(particle_id id=0;id<this->size;id++){
+			state+=this->forecast.at(id).nodes.at(node_id).get_state()*this->forecast_weight.at(id);
+//			transmission_power+=this->analysis.at(id).nodes[node_id].get_transmission_power()*this->analysis_weight.at(id);		
+		}
+		node.set_state(state);
+		node.set_transmission_power(0.3);
+		node.set_infectious_period(10);//adopt majority
+		nodes[node_id]=node;
 	}
 	Network analysis(nodes);
+	return analysis;
 }
 
