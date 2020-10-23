@@ -8,7 +8,7 @@
 class Particles{
 	public:
 		int size;
-		std::list<node_id> node_ids;
+		std::list<node_id> id_list;
 		std::map<particle_id,Network> forecast;
 		int t;
 
@@ -19,13 +19,14 @@ class Particles{
 		void cout_likelihood() const;
 		void cout_weight() const;
 		void cout_state() const;
+		Network get_analysis() const;
 
 		void update(std::map<node_id,Node> y);
 		double Neff();
 /*		void resample(bool condition);
 */
 	private:
-		std::map<particle_id,Network*> analysis;
+		std::map<particle_id,Network> analysis;
 		std::map<particle_id,double> forecast_weight;
 		std::map<particle_id,double> likelihood;
 		std::map<particle_id,double> analysis_weight;

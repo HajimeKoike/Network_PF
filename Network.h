@@ -49,6 +49,7 @@ class Network{
 		void set_adjacent(std::map<node_id,std::vector<node_id> > adjs);
 
 		int get_size() const { return this->size; }
+		std::list<node_id> get_id() const;
 		std::map<node_id,int> get_state() const;
 		std::map<node_id,std::vector<node_id> > get_adjacent() const;
 

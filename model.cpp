@@ -39,7 +39,7 @@ int main(){
 	network.cout_transmission_power();
 
 	int Tend=10;
-	Particles nets(2,network);
+	Particles nets(50,network);
 	std::cout<<"PREPARED PARTICLE"<<std::endl;
 	Network_Dynamics networkdyn(network);
 	std::map<node_id,Node> y;
@@ -54,11 +54,7 @@ int main(){
 			std::exit(1);
 		}
 		y.clear();
-		std::cout<<"updated now"<<std::endl;
-		networkdyn.now.cout_adjacent();
-		std::cout<<"networksize"<<networkdyn.now.size<<std::endl;
 		for(int k=0;k<networkdyn.now.size;k+=1){
-			std::cout<<"OBSERVED"<<std::endl;
 			Node obs(networkdyn.now.nodes[k]);
 			y[k]=obs;
 		}
@@ -69,8 +65,9 @@ int main(){
 			netdyn.step();
 			net=netdyn.now;
 		}
-		nets.cout_state();
 		nets.update(y);
+		Network anal=nets.get_analysis();
+		anal.cout_state();
 	}
 		
 	return 0;
