@@ -8,8 +8,6 @@ Network::Network(std::map<node_id,std::vector<node_id> > adjs){
 		assert(node.get_id()==node_id);
 		node.set_adjacent(adjs.at(node_id));
 		(this->nodes)[node_id]=node;
-//		(this->nodes)[node_id].cout_id();
-//		node.cout_id();
 	}
 }
 
